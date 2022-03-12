@@ -1,7 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 
-const HeaderLink = ({ Icon, text, avatar, feed }) => {
+const HeaderLink = ({ Icon, text, avatar, feed, active, hidden }) => {
   return (
     <div
       className={clsx(
@@ -11,11 +11,24 @@ const HeaderLink = ({ Icon, text, avatar, feed }) => {
         },
         {
           "text-gray-500 hover:text-gray-700": !feed,
-        }
+        },
+        {
+          "hidden md:flex": hidden,
+        },
+        { "!text-black dark:!text-white": active }
       )}
     >
       <Icon className={clsx(avatar && "!h-7 !w-7 lg:!-mb-1")} />
-      <h4 className="text-sm">{text}</h4>
+      <h4
+        className={clsx("text-sm", {
+          "hidden lg:flex justify-center w-full": feed,
+        })}
+      >
+        {text}
+      </h4>
+      {active && (
+        <span className="hidden lg:block h-0.5 w-[calc(100%+20px)] bg-black dark:bg-white rounded-t-full"></span>
+      )}
     </div>
   );
 };
