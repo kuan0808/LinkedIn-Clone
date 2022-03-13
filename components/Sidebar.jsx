@@ -3,8 +3,10 @@ import Image from "next/image";
 import React from "react";
 import BookmarkOutlinedIcon from "@mui/icons-material/BookmarkOutlined";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import { useSession, signOut } from "next-auth/react";
 
 const Sidebar = () => {
+  const { data: session } = useSession();
   return (
     <aside className="space-y-2 min-w-max max-w-lg">
       {/* top */}
@@ -16,14 +18,17 @@ const Sidebar = () => {
           <Image src="http://rb.gy/i26zak" layout="fill" priority />
         </div>
         <Avatar
-          src="https://media.gq.com.tw/photos/5eb26a84696da397edd72980/master/w_1600%2Cc_limit/GettyImages-1130598318.jpg"
+          src={session?.user?.image}
           className="!h-14 !w-14 !border-2 !absolute !top-4 !cursor-pointer"
+          onClick={signOut}
         />
         <div className="mt-5 py-4 space-y-0.5">
           <h4 className="hover:underline decoration-purple-700 underline-offset-1 cursor-pointer">
-            Elon Musk
+            {session?.user?.name}
           </h4>
-          <p className="text-black/60 dark:text-white/75">elonmusk@gmail.com</p>
+          <p className="text-black/60 dark:text-white/75">
+            {session?.user?.email}
+          </p>
         </div>
         <div className="hidden md:inline text-left dark:text-white/75 text-sm">
           <div className="font-medium sidebarButton space-y-0.5">
