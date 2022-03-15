@@ -1,6 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const HeaderLink = ({ Icon, text, avatar, feed, active, hidden }) => {
   const { data: session } = useSession();
@@ -19,6 +19,7 @@ const HeaderLink = ({ Icon, text, avatar, feed, active, hidden }) => {
         },
         { "!text-black dark:!text-white": active }
       )}
+      onClick={() => avatar && signOut()}
     >
       <Icon
         className={clsx(avatar && "!h-7 !w-7 lg:!-mb-1")}
