@@ -4,10 +4,11 @@ import { useRouter } from "next/router";
 import { AnimatePresence } from "framer-motion";
 import { useRecoilState } from "recoil";
 
-import { Header, Sidebar, Feed, Modal } from "../components";
+import { Header, Sidebar, Feed, Modal, Widgets } from "../components";
 import { modalState, modalTypeState } from "../atoms/modalAtom";
+import { connectToDatabase } from "../util/mongodb";
 
-export default function Home() {
+export default function Home({ posts, articles }) {
   const [modalOpen, setModalOpen] = useRecoilState(modalState);
   const [modalType, setModalType] = useRecoilState(modalTypeState);
   const router = useRouter();
@@ -18,7 +19,7 @@ export default function Home() {
     },
   });
   return (
-    <div className="bg-[#F2F2EF] dark:bg-black dark:text-white min-h-screen md:space-y-6">
+    <div className="bg-[#F2F2EF] dark:bg-black dark:text-white h-screen overflow-y-scroll md:space-y-6">
       <Head>
         <title>Feed | LinkedIn</title>
         <link rel="icon" href="/favicon.ico" />
@@ -30,9 +31,9 @@ export default function Home() {
           {/* Sidebar */}
           <Sidebar />
           {/* Feed */}
-          <Feed />
+          <Feed posts={posts} />
         </div>
-        {/* Widgets */}
+        <Widgets articles={articles} />
         <AnimatePresence>
           {modalOpen && (
             <Modal handleClose={() => setModalOpen(false)} type={modalType} />
@@ -55,9 +56,32 @@ export const getServerSideProps = async (context) => {
       },
     };
   }
+  // Get postS on SSR
+  const { db } = await connectToDatabase();
+  const posts = await db
+    .collection("posts")
+    .find()
+    .sort({ timestamp: -1 })
+    .toArray();
+
+  // Get news API
+  const results = await fetch(
+    `https://newsapi.org/v2/top-headlines?country=us&apiKey=${process.env.NEWS_API_KEY}`
+  ).then((res) => res.json());
+
   return {
     props: {
       session,
+      articles: results.articles,
+      posts: posts.map((post) => ({
+        _id: post._id.toString(),
+        input: post.input,
+        photoUrl: post.photoUrl,
+        username: post.username,
+        email: post.email,
+        userImg: post.userImg,
+        createdAt: post.createdAt,
+      })),
     },
   };
 };
