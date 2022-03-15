@@ -1,7 +1,9 @@
 import React from "react";
 import clsx from "clsx";
+import { useSession } from "next-auth/react";
 
 const HeaderLink = ({ Icon, text, avatar, feed, active, hidden }) => {
+  const { data: session } = useSession();
   return (
     <div
       className={clsx(
@@ -18,7 +20,10 @@ const HeaderLink = ({ Icon, text, avatar, feed, active, hidden }) => {
         { "!text-black dark:!text-white": active }
       )}
     >
-      <Icon className={clsx(avatar && "!h-7 !w-7 lg:!-mb-1")} />
+      <Icon
+        className={clsx(avatar && "!h-7 !w-7 lg:!-mb-1")}
+        src={session?.user?.image}
+      />
       <h4
         className={clsx("text-sm", {
           "hidden lg:flex justify-center w-full": feed,
