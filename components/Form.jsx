@@ -3,11 +3,13 @@ import { useSession } from "next-auth/react";
 import { useRecoilState } from "recoil";
 
 import { modalState } from "../atoms/modalAtom";
+import { handlePostState } from "../atoms/postAtom";
 
 const Form = () => {
   const [input, setInput] = useState("");
   const [photoUrl, setPhotoUrl] = useState("");
   const [modalOpen, setModalOpen] = useRecoilState(modalState);
+  const [handlePost, setHandlePost] = useRecoilState(handlePostState);
   const { data: session } = useSession();
 
   const uploadPost = async (e) => {
@@ -19,6 +21,7 @@ const Form = () => {
         input,
         photoUrl,
         username: session.user.name,
+        email: session.user.email,
         userImg: session.user.image,
         createdAt: new Date().toString(),
       }),
@@ -29,6 +32,7 @@ const Form = () => {
 
     const responseData = await response.json();
 
+    setHandlePost(true); // invalidate the cached/SSR posts
     setModalOpen(false);
   };
   return (
