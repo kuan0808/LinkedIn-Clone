@@ -1,10 +1,15 @@
 import Head from "next/head";
 import { getSession, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import { AnimatePresence } from "framer-motion";
+import { useRecoilState } from "recoil";
 
-import { Header, Sidebar } from "../components";
+import { Header, Sidebar, Feed, Modal } from "../components";
+import { modalState, modalTypeState } from "../atoms/modalAtom";
 
 export default function Home() {
+  const [modalOpen, setModalOpen] = useRecoilState(modalState);
+  const [modalType, setModalType] = useRecoilState(modalTypeState);
   const router = useRouter();
   const { data: session } = useSession({
     required: true,
@@ -25,10 +30,14 @@ export default function Home() {
           {/* Sidebar */}
           <Sidebar />
           {/* Feed */}
-          <div></div>
+          <Feed />
         </div>
         {/* Widgets */}
-        <div></div>
+        <AnimatePresence>
+          {modalOpen && (
+            <Modal handleClose={() => setModalOpen(false)} type={modalType} />
+          )}
+        </AnimatePresence>
       </main>
     </div>
   );
