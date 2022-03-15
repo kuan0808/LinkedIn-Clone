@@ -3,8 +3,11 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import IconButton from "@mui/material/IconButton";
 import { useSession } from "next-auth/react";
 import { Avatar } from "@mui/material";
+import { useRecoilValue } from "recoil";
 
 import Form from "./Form";
+import Post from "./Post";
+import { getPostState } from "../atoms/postAtom";
 
 const dropIn = {
   hidden: {
@@ -53,7 +56,7 @@ const Backdrop = ({ children, onClick }) => {
   return (
     <motion.div
       onClick={onClick}
-      className="absolute top-0 left-0 h-full w-full overflow-y-scroll bg-black/70 flex items-center justify-center z-50"
+      className="fixed top-0 left-0 h-full w-full bg-black/70 flex items-center justify-center z-50"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -65,6 +68,7 @@ const Backdrop = ({ children, onClick }) => {
 
 const Modal = ({ handleClose, type }) => {
   const { data: session } = useSession();
+  const post = useRecoilValue(getPostState);
 
   return (
     <Backdrop onClick={handleClose}>
@@ -98,7 +102,7 @@ const Modal = ({ handleClose, type }) => {
       {type === "gifYouUp" && (
         <motion.div
           onClick={(e) => e.stopPropagation()}
-          className="rounded-l-lg flex bg-[#1D2226] w-full max-w-6xl -mt-[7vh] mx-6"
+          className="rounded-lg flex bg-[#1D2226] w-full max-w-6xl -mt-[7vh] mx-6"
           variants={gifYouUp}
           initial="hidden"
           animate="visible"
